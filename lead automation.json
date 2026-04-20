@@ -1,0 +1,663 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-realestate",
+        "options": {
+          "responseCode": {
+            "values": {}
+          },
+          "responseData": "{ \"status\": \"received\" }"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        -32
+      ],
+      "id": "7d7272f1-d121-41f5-a424-95df4d4807f8",
+      "name": "Webhook",
+      "webhookId": "13c87e2e-fa73-47ab-9c84-7c119fd0c99c"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw text from OpenAI\nconst rawResponse = $input.item.json.text;\n\n// Parse the JSON string into an object\nlet qualification;\ntry {\n  qualification = JSON.parse(rawResponse);\n} catch (error) {\n  qualification = {\n    score: 25,\n    category: \"COLD\",\n    intent_type: \"unclear\",\n    key_insight: \"Parse error — manual review needed\",\n    recommended_action: \"Check lead manually\"\n  };\n}\n\n// Get lead data from the Set node\n// ↓ Change this name to match YOUR Set node's exact name on the canvas\nconst leadData = $('clean').item.json;\n\n// Return one merged object\nreturn {\n  lead_id:     leadData.lead_id,\n  timestamp:   leadData.timestamp,\n  full_name:   leadData.full_name,\n  phone:       leadData.phone,\n  email:       leadData.email,\n  source:      leadData.source,\n  project:     leadData.project,\n  budget:      leadData.budget,\n  bhk:         leadData.bhk,\n  timeline:    leadData.timeline,\n  message:     leadData.message,\n  ai_score:    qualification.score,\n  ai_category: qualification.category,\n  ai_intent:   qualification.intent_type,\n  ai_insight:  qualification.key_insight,\n  ai_action:   qualification.recommended_action\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        -32
+      ],
+      "id": "ef05a3e2-13ee-4350-a248-d06b2d85b4df",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1s1gKfueI_ukf3rcEcRcDrYfjO4O0ARda8A34lqDKVeI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "real estate leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $('clean').item.json[\"timestamp \"] }}",
+            "Lead ID": "={{ $('clean').item.json[\"lead_id \"] }}",
+            "Full Name": "={{ $('clean').item.json[\"full_name \"] }}",
+            "Phone": "={{ $('clean').item.json[\"phone   \"] }}",
+            " Email": "={{ $('clean').item.json[\"email  \"] }}",
+            "Source": "={{ $('clean').item.json[\"source  \"] }}",
+            "Project Interest": "={{ $('clean').item.json[\"project \"] }}",
+            "Budget": "={{ $json.budget }}",
+            " BHK Type": "={{ $('clean').item.json[\"bhk_type  \"] }}",
+            "Timeline": "={{ $('clean').item.json[\"timeline \"] }}",
+            "Intent Type": "={{ $json.ai_intent }}",
+            "AI Score": "={{ $json.ai_score }}",
+            "AI Category": "={{ $json.ai_category }}",
+            "AI Reasoning": "={{ $json.ai_action }}",
+            "Status": "New"
+          },
+          "matchingColumns": [
+            "Timestamp"
+          ],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Email",
+              "displayName": " Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Project Interest",
+              "displayName": "Project Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " BHK Type",
+              "displayName": " BHK Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timeline",
+              "displayName": "Timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Intent Type",
+              "displayName": "Intent Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI Score",
+              "displayName": "AI Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI Category",
+              "displayName": "AI Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI Reasoning",
+              "displayName": "AI Reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -32
+      ],
+      "id": "011006dc-ecf9-4c69-b068-9dcfab2ec3e2",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ImfvGR6dEMDiGDtI",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"AI Category\"] }}",
+                    "rightValue": "HOT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "61ab0715-09b2-4faf-b791-090142587342"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8b23fd12-9883-476c-9476-36aaef81d1aa",
+                    "leftValue": "={{ $json[\"AI Category\"] }}",
+                    "rightValue": "WARM",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "fe387ed2-dfa3-42de-98e0-5302bdccfdb8",
+                    "leftValue": "={{ $json[\"AI Category\"] }}",
+                    "rightValue": "COLD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        -32
+      ],
+      "id": "db08d59d-4164-48e1-b37d-2eaf18f19a38",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "1719832790",
+        "text": "=🔥 *HOT LEAD - Act Now*\n\n*Name:* {{ $('Switch').item.json[\"Full Name\"] }}\n*Phone:* {{ $('Switch').item.json[\"Phone\"] }}\n*Email:* {{ $('Switch').item.json[\"Email\"] }}\n*Project:* {{ $('Switch').item.json[\"Project Interest\"] }}\n*Budget:* {{ $('Switch').item.json[\"Budget\"] }}\n*BHK:* {{ $('Switch').item.json[\"BHK Type\"] }}\n*Timeline:* {{ $('Switch').item.json[\"Timeline\"] }}\n*Source:* {{ $('Switch').item.json[\"Source\"] }}\n\n*AI Score:* {{ $('Switch').item.json[\"AI Score\"] }}/100\n*Next Step:* {{ $('Switch').item.json[\"AI Reasoning\"] }}\n\nLead ID: {{ $('Switch').item.json[\"Lead ID\"] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        -304
+      ],
+      "id": "76d2b7eb-da26-4cbb-ac38-3a770b3b8569",
+      "name": "Send a text message",
+      "webhookId": "837a4f85-4ddc-4405-8489-c4c6614994fa",
+      "credentials": {
+        "telegramApi": {
+          "id": "8dt4ZIiMCzWVZXcL",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json[\" Email\"] }}",
+        "subject": "=Your enquiry about {{ $json[\"Project Interest\"] }} — Details inside",
+        "message": "=<div style=\"font-family:sans-serif;max-width:520px;color:#222\">\n  <p>Namaste <strong>{{ $json[\"Full Name\"] }}</strong>,</p>\n\n  <p>\n    Thank you for your enquiry about \n    <strong>{{ $json[\"Project Interest\"] }}</strong>.\n    We've received your details and our property advisor will call you\n    <strong>within the next 15 minutes</strong>.\n  </p>\n\n  <p>We're preparing the following for you:</p>\n\n  <ul>\n    <li>Floor plans for {{ $json[\" BHK Type\"] }} configurations</li>\n    <li>Current pricing and payment plan details</li>\n    <li>Available inventory matching your budget of {{ $json.Budget }}</li>\n  </ul>\n\n  <p>\n    If you have any specific questions before we call,\n    feel free to reply to this email.\n  </p>\n\n  <p style=\"margin-top:24px\">\n    Warm regards,<br>\n    <strong>Property Advisory Team</strong>\n  </p>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        -96
+      ],
+      "id": "f81226e4-2c07-4575-af50-49aa0627be4d",
+      "name": "Send a message",
+      "webhookId": "c67bd1f9-70da-418a-b7fa-083cb7fd0c12",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mWlX7ePOcUgpCn3k",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json[\" Email\"] }}",
+        "subject": "=Details for {{ $json[\"Project Interest\"] }}  —  {{ $json[\" BHK Type\"] }} options",
+        "message": "=<div style=\"font-family:sans-serif;max-width:520px;color:#222\">   <p>Namaste <strong>{{ $json[\"Full Name\"] }}</strong>,</p>    <p>Thank you for your interest in <strong>{{ $json[\"Project Interest\"] }}</strong>{{ $json[\" BHK Type\"] }}</p>    <p>Based on your preference for <strong></strong>    within a budget of <strong>{{ $json.Budget }}</strong>,    I think we have some excellent options for you.</p>    <p>Our team will reach out within 24 hours to walk you through    the available configurations and answer any questions.</p>    <p>In the meantime, here's what sets this project apart:</p>   <ul>     <li>RERA approved — on-schedule delivery</li>     <li>Prime location with excellent connectivity</li>     <li>Flexible payment plans and home loan assistance</li>   </ul>    <p>Feel free to reply with any questions.</p>    <p style=\"margin-top:24px\">Best regards,<br>   <strong>Property Advisory Team</strong></p> </div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        784,
+        -240
+      ],
+      "id": "123639e9-fe45-4168-8ff2-5ea5c47b2d73",
+      "name": "Send a message1",
+      "webhookId": "0ff880e7-fca7-4472-92a5-d52fe0bf3571",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mWlX7ePOcUgpCn3k",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json[\" Email\"] }}",
+        "subject": "=Thanks for your interest in {{ $json[\"Project Interest\"] }}",
+        "message": "=<div style=\"font-family:sans-serif;max-width:520px;color:#222\">   <p>Hi <strong>{{ $json[\"Full Name\"] }}</strong>,</p>    <p>Thank you for reaching out about <strong>{{ $json[\"Project Interest\"] }}</strong>.</p>    <p>I'm sharing our project overview for your reference.    Please take a look at your convenience, and when the time is right    for you, we'd love to schedule a site visit.</p>    <p>We're here whenever you're ready — no pressure at all.</p>    <p style=\"margin-top:24px\">Regards,<br>   <strong>Property Advisory Team</strong></p> </div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        80
+      ],
+      "id": "ea0ecb34-780f-4af0-8b11-5e52dbcb22c6",
+      "name": "Send a message2",
+      "webhookId": "00bcdafc-cae2-4f9f-9a88-795fd2499d98",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mWlX7ePOcUgpCn3k",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\n\n\nName: {{ $json[\"full_name \"] }} Phone: {{ $json[\"phone   \"] }} Email: {{ $json[\"email  \"] }} Source: {{ $json[\"source  \"] }} Project:{{ $json[\"project \"] }}  Budget: {{ $json.budget }} BHK Type: {{ $json[\"bhk_type  \"] }} Timeline: {{ $json[\"timeline \"] }} Message: {{ $json[\"message \"] }} Qualify this lead.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a real estate lead qualification assistant for an Indian property broker.  Analyse the lead information and return ONLY a valid JSON object. No explanation,  no markdown, no backticks. Just raw JSON.  Score the lead from 0 to 100 based on these rules: - Budget clearly stated above ₹40L: +25 points - Timeline is under 3 months: +25 points - Phone number is provided: +20 points - BHK preference is clearly stated: +15 points - Intent appears to be self-use (not vague): +15 points  Categories: - 70 to 100: HOT - 40 to 69: WARM   - 0 to 39: COLD  Return exactly this JSON structure: {   \"score\": <number>,   \"category\": \"<HOT or WARM or COLD>\",   \"intent_type\": \"<self-use or investment or unclear>\",   \"key_insight\": \"<one sentence about this lead's strongest buying signal>\",   \"recommended_action\": \"<one sentence: what the broker should do next>\" }"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -128,
+        -160
+      ],
+      "id": "65d4631e-e60e-4432-a7ee-9bd356639594",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -224
+      ],
+      "id": "ef984759-a3eb-494b-b94c-7b837ecaeb4c",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "GMESAP1P4SdLJ597",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aea96f66-09a5-41ec-b91e-9f23e1a4f0a3",
+              "name": "lead_id ",
+              "value": "={{ \"LEAD-\" + $now.toFormat(\"yyyyMMdd-HHmmss\") }}",
+              "type": "string"
+            },
+            {
+              "id": "7c66a471-ab20-4d63-8b4a-424634cb49ee",
+              "name": "timestamp ",
+              "value": "= {{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "b61f067e-2fe8-443b-9a6b-d34de25e3c02",
+              "name": "full_name ",
+              "value": "={{ $json.body.name || $json.body.full_name || \"Unknown\" }}",
+              "type": "string"
+            },
+            {
+              "id": "8e7e2195-0122-431e-aaaa-52a596d7aa0c",
+              "name": "phone   ",
+              "value": "={{ $json.body.phone || $json.body.mobile || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "1ca1b0b1-241f-45a9-b356-63d254b8433f",
+              "name": "email  ",
+              "value": "={{ $json.body.email || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "aef15f1f-1712-4feb-9ee3-a8ed9c09c68a",
+              "name": "source  ",
+              "value": "={{ $json.body.source || \"Website Form\" }}",
+              "type": "string"
+            },
+            {
+              "id": "07083cc5-01cf-4974-8aa2-09046ab41904",
+              "name": "project ",
+              "value": "= {{ $json.body.project || \"General Enquiry\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b261cad0-b9fb-4574-b9a8-4ad114fd1c6d",
+              "name": "budget",
+              "value": "={{ $json.body.budget || \"Not specified\" }}",
+              "type": "string"
+            },
+            {
+              "id": "d20b6fb5-2f6c-4ba2-9187-10a3148ae889",
+              "name": "bhk_type  ",
+              "value": "= {{ $json.body.bhk || $json.body.configuration || \"Not specified\" }}",
+              "type": "string"
+            },
+            {
+              "id": "3f8cb5cf-4bed-4235-be11-c34a8cd482fc",
+              "name": "timeline ",
+              "value": "={{ $json.body.timeline || \"Not specified\" }}",
+              "type": "string"
+            },
+            {
+              "id": "bbddde51-6183-4f74-819c-d5dcb20c121d",
+              "name": "message ",
+              "value": "={{ $json.body.message || \"\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        -32
+      ],
+      "id": "38daa64d-440a-4e3e-8509-033dc24c56d8",
+      "name": "clean"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "clean",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6f92a76e-d3d8-43ea-938f-7fcf11e428cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd80098b37522b7b6dffde8f26c25d32aa3794f29f1daca440865b620bdaaf11"
+  },
+  "id": "zFZHloNqZm3pkaDv",
+  "tags": []
+}
