@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Enquiry — Portfolio Demo</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:sans-serif;background:#f0f4f8;
+         display:flex;justify-content:center;padding:40px 16px;min-height:100vh}
+    .card{background:white;border-radius:14px;padding:32px;
+          width:100%;max-width:460px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+    .badge{display:inline-block;background:#dcfce7;color:#166534;
+           font-size:11px;font-weight:600;padding:3px 10px;
+           border-radius:20px;margin-bottom:12px}
+    h2{font-size:22px;font-weight:600;color:#111;margin-bottom:6px}
+    .subtitle{font-size:13px;color:#666;margin-bottom:24px;line-height:1.5}
+    label{display:block;font-size:12px;font-weight:600;
+          color:#444;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+    input,select{width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;
+                 border-radius:8px;font-size:14px;margin-bottom:16px;
+                 outline:none;transition:border .15s;color:#111}
+    input:focus,select:focus{border-color:#3b82f6}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    button{width:100%;padding:13px;background:#1d4ed8;color:white;
+           border:none;border-radius:8px;font-size:15px;font-weight:500;
+           cursor:pointer;transition:background .15s;margin-top:4px}
+    button:hover{background:#1e40af}
+    button:disabled{background:#93c5fd;cursor:not-allowed}
+    .success{display:none;text-align:center;padding:32px 16px}
+    .success .icon{font-size:48px;margin-bottom:12px}
+    .success h3{font-size:18px;color:#059669;margin-bottom:8px}
+    .success p{font-size:13px;color:#666;line-height:1.5}
+    .note{font-size:11px;color:#9ca3af;text-align:center;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="form-section">
+      <span class="badge">RERA Registered</span>
+      <h2>Prestige Lakeside Residences</h2>
+      <p class="subtitle">Premium 2 & 3 BHK apartments · Whitefield, Bengaluru · 
+      Possession: Dec 2026</p>
+
+      <label>Full Name *</label>
+      <input id="name" type="text" placeholder="Priya Sharma">
+
+      <label>Phone Number *</label>
+      <input id="phone" type="tel" placeholder="9876543210">
+
+      <label>Email Address</label>
+      <input id="email" type="email" placeholder="priya@gmail.com">
+
+      <div class="row">
+        <div>
+          <label>Configuration</label>
+          <select id="bhk">
+            <option value="">Select</option>
+            <option>2 BHK</option>
+            <option>3 BHK</option>
+            <option>3 BHK + Study</option>
+          </select>
+        </div>
+        <div>
+          <label>Budget</label>
+          <select id="budget">
+            <option value="">Select</option>
+            <option value="60-80 lakhs">₹60L – ₹80L</option>
+            <option value="80 lakhs - 1.2 crore">₹80L – ₹1.2Cr</option>
+            <option value="above 1.2 crore">Above ₹1.2Cr</option>
+          </select>
+        </div>
+      </div>
+
+      <label>When are you planning to buy?</label>
+      <select id="timeline">
+        <option value="">Select</option>
+        <option value="within 1 month">Within 1 month</option>
+        <option value="within 3 months">Within 3 months</option>
+        <option value="3 to 6 months">3–6 months</option>
+        <option value="just exploring">Just exploring</option>
+      </select>
+
+      <label>Any specific requirements?</label>
+      <input id="message" type="text" 
+             placeholder="e.g. east facing, upper floor, vastu compliant">
+
+      <button id="submit-btn" onclick="submitLead()">
+        Get Brochure + Price List →
+      </button>
+      <p class="note">No spam. Your details are shared only with our property advisor.</p>
+    </div>
+
+    <div class="success" id="success-section">
+      <div class="icon">✅</div>
+      <h3>You're all set!</h3>
+      <p>Our property advisor will contact you within 15 minutes with 
+      the brochure, price list, and available inventory details.</p>
+    </div>
+  </div>
+
+  <script>
+    // ↓ Replace this with your actual n8n TEST webhook URL
+    const WEBHOOK_URL = 'https://chandru155.app.n8n.cloud/webhook-test/lead-realestate';
+
+    async function submitLead() {
+      const name  = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      
+      if (!name || !phone) {
+        alert('Please enter your name and phone number to continue.');
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      const payload = {
+        name:     name,
+        phone:    phone,
+        email:    document.getElementById('email').value.trim(),
+        bhk:      document.getElementById('bhk').value,
+        budget:   document.getElementById('budget').value,
+        timeline: document.getElementById('timeline').value,
+        message:  document.getElementById('message').value.trim(),
+        source:   'Portfolio Demo Form',
+        project:  'Prestige Lakeside Residences'
+      };
+
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('success-section').style.display = 'block';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Get Brochure + Price List →';
+        alert('Connection error. Make sure your n8n webhook is active and try again.');
+      }
+    }
+  </script>
+</body>
+</html>
